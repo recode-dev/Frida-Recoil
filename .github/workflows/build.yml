@@ -21,14 +21,27 @@ jobs:
       - name: Install dependencies
         run: |
           npm install frida@17.2.11 @reversense/dexcalibur-frida-compile
+          npm install --no-save babelify @babel/core @babel/preset-env
 
       - name: Build bytecode
         run: |
-          echo '{"type":"module"}' > RecoilGear/agent/package.json
+          cat > RecoilGear/agent/package.json <<'EOF'
+          {
+            "type": "module",
+            "browserify": {
+              "transform": [
+                ["babelify", {
+                  "presets": ["@babel/preset-env"],
+                  "sourceType": "module"
+                }]
+              ]
+            }
+          }
+          EOF
           npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - uses: actions/upload-artifact@v4
         with:
           name: RecoilGear-bytecode
-          path: script_69_252.js
+          path: RecoilGear.js
           retention-days: 30
