@@ -18,20 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
       - name: Install dependencies
         run: |
           npm install frida@17.2.11
-          npm install @reversense/dxc-frida-compile
+          npm install @reversense/dexcalibur-frida-compile
 
       - name: Build bytecode
-        run: npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
+        run: ./node_modules/.bin/frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - uses: actions/upload-artifact@v4
         with:
