@@ -1,4 +1,4 @@
-name: Build RecoilGear
+name: Build RecoilGear (Bytecode)
 
 on:
   workflow_dispatch:
@@ -22,15 +22,18 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install frida-compile
-        run: npm install -g frida-compile
+      - name: Install frida (runtime for bytecode)
+        run: npm install -g frida@17.2.11
 
-      - name: Build RecoilGear.js
-        run: frida-compile RecoilGear/agent/index.js -o RecoilGear.js -c
+      - name: Install frida-compile
+        run: npm install -g frida-compile@19.0.5
+
+      - name: Build RecoilGear.js (bytecode)
+        run: frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RecoilGear
-          path: RecoilGear.js
+          name: RecoilGear-bytecode
+          path: script_69_252.js
           retention-days: 30
