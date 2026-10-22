@@ -43,5 +43,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: RecoilGear-bytecode
-          path: RecoilGear.js
+          path: script_69_252.js
           retention-days: 30
