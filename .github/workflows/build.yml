@@ -1,58 +1,39 @@
-name: Build RecoilGear (Bytecode + Cache)
+name: Build RecoilGear
 
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
-  schedule:
-    - cron: '0 3 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout RecoilGear source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: recode-dev/RecoilGear
           path: RecoilGear
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 1. Кэш для npm (глобальный) — ускоряет установку пакетов
-      - name: Cache npm global packages
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      # 2. Кэш для локальных node_modules (frida, frida-compile)
-      - name: Cache local node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
-      # 3. Установка зависимостей (frida + байткод-компилятор)
       - name: Install dependencies
         run: |
           npm install frida@17.2.11
           npm install @reversense/dexcalibur-frida-compile
 
-      # 4. Сборка в байткод
-      - name: Build RecoilGear.js (bytecode)
+      - name: Build bytecode
         run: npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
-      # 5. Загрузка артефакта
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: RecoilGear-bytecode
           path: RecoilGear.js
