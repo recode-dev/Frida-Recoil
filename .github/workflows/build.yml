@@ -17,8 +17,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'package.json'
 
       - name: Install dependencies
         run: |
@@ -26,23 +24,11 @@ jobs:
 
       - name: Build bytecode
         run: |
-          cat > tsconfig.json <<'EOF'
-          {
-            "compilerOptions": {
-              "target": "es2020",
-              "module": "esnext",
-              "allowJs": true,
-              "esModuleInterop": true,
-              "skipLibCheck": true,
-              "noEmit": true
-            },
-            "include": ["RecoilGear/agent/**/*.js"]
-          }
-          EOF
-          npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b -t tsconfig.json
+          echo '{"type":"module"}' > RecoilGear/agent/package.json
+          npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - uses: actions/upload-artifact@v4
         with:
           name: RecoilGear-bytecode
-          path: RecoilGear.js
+          path: script_69_252.js
           retention-days: 30
