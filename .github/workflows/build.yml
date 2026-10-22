@@ -1,4 +1,4 @@
-name: Build RecoilGear
+name: Build RecoilGear (Bytecode)
 
 on:
   workflow_dispatch:
@@ -18,13 +18,26 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install exact versions (frida + compiler)
+      - name: Install dependencies (local, not global)
         run: |
           npm install frida@17.2.11
           npm install frida-compile@16.4.2
 
-      - name: Build bytecode
-        run: ./node_modules/.bin/frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
+      - name: Bundle RecoilGear.js (no bytecode flag)
+        run: ./node_modules/.bin/frida-compile RecoilGear/agent/index.js -o RecoilGear.bundle.js
+
+      - name: Compile bundle to QuickJS bytecode
+        run: |
+          node -e "
+          const fs = require('fs');
+          const frida = require('frida');
+          (async () => {
+            const source = fs.readFileSync('RecoilGear.bundle.js', 'utf8');
+            const bytecode = await frida.compileScript(source, { runtime: 'qjs' });
+            fs.writeFileSync('RecoilGear.js', bytecode);
+            console.log('Bytecode size:', bytecode.length, 'bytes');
+          })().catch(e => { console.error(e); process.exit(1); });
+          "
 
       - uses: actions/upload-artifact@v4
         with:
