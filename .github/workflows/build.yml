@@ -22,11 +22,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Frida (runtime for bytecode)
+      - name: Install Frida runtime (for bytecode)
         run: npm install -g frida@17.2.11
 
-      - name: Install bytecode-capable compiler
-        run: npm install -g @reversense/dexcalibur-frida-compile
+      - name: Install frida-compile (16.x, supports -b and ES modules)
+        run: npm install -g frida-compile@16.4.2
 
       - name: Build RecoilGear.js (bytecode)
         run: frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
