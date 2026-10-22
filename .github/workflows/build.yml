@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install frida@17.2.11
-          npm install @reversense/dexcalibur-frida-compile
+          npm install @reversense/dxc-frida-compile
 
       - name: Build bytecode
         run: npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
