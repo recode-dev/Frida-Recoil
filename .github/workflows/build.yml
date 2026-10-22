@@ -22,11 +22,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install frida (runtime for bytecode)
+      - name: Install Frida (runtime for bytecode)
         run: npm install -g frida@17.2.11
 
-      - name: Install frida-compile
-        run: npm install -g frida-compile@19.0.5
+      - name: Install bytecode-capable compiler
+        run: npm install -g @reversense/dexcalibur-frida-compile
 
       - name: Build RecoilGear.js (bytecode)
         run: frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
@@ -35,5 +35,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RecoilGear-bytecode
-          path: script_69_252.js
+          path: RecoilGear.js
           retention-days: 30
