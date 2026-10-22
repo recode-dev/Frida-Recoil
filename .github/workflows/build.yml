@@ -18,23 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install exact versions (frida + compiler)
         run: |
           npm install frida@17.2.11
-          npm install @reversense/dxc-frida-compile
+          npm install frida-compile@16.4.2
 
-      - name: Build bytecode (programmatic API)
-        run: |
-          node -e "
-          const compiler = require('@reversense/dxc-frida-compile');
-          (async () => {
-            await compiler.build('RecoilGear/agent/index.js', 'RecoilGear.js', {
-              bytecode: true,
-              compress: false
-            });
-            console.log('Build OK');
-          })().catch(e => { console.error(e); process.exit(1); });
-          "
+      - name: Build bytecode
+        run: ./node_modules/.bin/frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - uses: actions/upload-artifact@v4
         with:
