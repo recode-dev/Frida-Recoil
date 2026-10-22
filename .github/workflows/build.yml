@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install frida@17.2.11 @reversense/dexcalibur-frida-compile
+          npm install frida@17.2.11 frida-compile@17
           npm install --no-save babelify @babel/core @babel/preset-env
 
       - name: Build bytecode
@@ -38,10 +38,13 @@ jobs:
             }
           }
           EOF
-          npx frida-compile RecoilGear/agent/index.js -o script_69_252.js -b
+          npx --yes frida-compile RecoilGear/agent/index.js -o script_69_252.js -b
+          ls -la script_69_252.js
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: RecoilGear-bytecode
           path: script_69_252.js
           retention-days: 30
+          if-no-files-found: error
