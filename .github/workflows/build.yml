@@ -1,4 +1,4 @@
-name: Build RecoilGear
+name: Build RecoilGear (Bytecode)
 
 on:
   workflow_dispatch:
@@ -18,13 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install exact versions (compiler with -b + frida for bytecode)
+      - name: Install dependencies
         run: |
-          npm install frida@17.2.11
-          npm install frida-compile@16.4.2
+          npm install frida@17.2.11 @reversense/dexcalibur-frida-compile
 
       - name: Build bytecode
-        run: ./node_modules/.bin/frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
+        run: |
+          npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - uses: actions/upload-artifact@v4
         with:
