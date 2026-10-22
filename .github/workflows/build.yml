@@ -22,27 +22,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install frida-compile (для сборки бандла)
-        run: npm install -g frida-compile@19.0.5
-
-      - name: Install frida (для компиляции в байткод)
-        run: npm install -g frida@17.2.11
-
-      - name: Bundle RecoilGear.js (без -b)
-        run: frida-compile RecoilGear/agent/index.js -o RecoilGear.bundle.js
-
-      - name: Compile to QuickJS bytecode
+      - name: Install dependencies (frida + frida-compile локально)
         run: |
-          node -e "
-          const fs = require('fs');
-          const frida = require('frida');
-          (async () => {
-            const source = fs.readFileSync('RecoilGear.bundle.js', 'utf8');
-            const bytecode = await frida.compileScript(source, { runtime: 'qjs' });
-            fs.writeFileSync('RecoilGear.js', bytecode);
-            console.log('Bytecode size:', bytecode.length, 'bytes');
-          })().catch(e => { console.error(e); process.exit(1); });
-          "
+          npm install frida@17.2.11
+          npm install frida-compile@16.4.2
+
+      - name: Build RecoilGear.js (bytecode)
+        run: npx frida-compile RecoilGear/agent/index.js -o RecoilGear.js -b
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
