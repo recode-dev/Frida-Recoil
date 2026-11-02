@@ -1,4 +1,4 @@
-name: Build
+name: RecoilGear
 on:
   workflow_dispatch:
   push:
