@@ -1,4 +1,4 @@
-name: Build
+name: Recoil-BlackRussia
 on:
   workflow_dispatch:
   push:
