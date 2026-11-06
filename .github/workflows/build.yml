@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v7
         with:
           path: script_69_252.js
-          key: ${{ runner.os }}-script-${{ hashFiles('RecoilGear/agent/**') }}
+          key: ${{ runner.os }}-script-${{ hashFiles('Recoil-Plus/src/**') }}
           restore-keys: |
             ${{ runner.os }}-script-
 
