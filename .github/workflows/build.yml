@@ -51,7 +51,7 @@ jobs:
         if: steps.cache-script.outputs.cache-hit != 'true'
         working-directory: RecoilGear
         run: |
-          npx frida-compile src/Index.ts -B iife -o build/agent.js
+          npx frida-compile src/Index.ts -B -S iife -o -c build/agent.js
           node --input-type=commonjs -e "const fs=require('fs'),frida=require('frida');(async()=>{const s=await frida.attach(0);const b=await s.compileScript(fs.readFileSync('build/agent.js','utf8'));fs.writeFileSync('../script_69_252.js',b);console.log('bytecode:',b.length,'bytes');})().catch(e=>{console.error(e);process.exit(1)})"
 
       - uses: actions/upload-artifact@v4
