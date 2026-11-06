@@ -1,4 +1,5 @@
 name: RecoilGear
+
 on:
   workflow_dispatch:
   push:
@@ -17,13 +18,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache npm and node_modules
+      - name: Cache npm
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json', '**/package.json') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('RecoilGear/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
@@ -32,33 +31,28 @@ jobs:
         uses: actions/cache@v4
         with:
           path: script_69_252.js
-          key: ${{ runner.os }}-script-${{ hashFiles('RecoilGear/agent/**') }}
+          key: ${{ runner.os }}-script-${{ hashFiles('RecoilGear/src/**', 'RecoilGear/tsconfig.json', 'RecoilGear/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-script-
 
       - name: Install dependencies
         if: steps.cache-script.outputs.cache-hit != 'true'
+        working-directory: RecoilGear
         run: |
-          npm install frida@17.2.11 @reversense/dexcalibur-frida-compile
-          npm install --no-save babelify @babel/core @babel/preset-env
+          npm ci
+          npm install --no-save frida@17.2.11
+
+      - name: Type check
+        if: steps.cache-script.outputs.cache-hit != 'true'
+        working-directory: RecoilGear
+        run: npx tsc --noEmit
 
       - name: Build bytecode
         if: steps.cache-script.outputs.cache-hit != 'true'
+        working-directory: RecoilGear
         run: |
-          cat > RecoilGear/agent/package.json <<'EOF'
-          {
-            "type": "module",
-            "browserify": {
-              "transform": [
-                ["babelify", {
-                  "presets": ["@babel/preset-env"],
-                  "sourceType": "module"
-                }]
-              ]
-            }
-          }
-          EOF
-          npx frida-compile RecoilGear/agent/index.js -o script_69_252.js -b
+          npx frida-compile src/Index.ts -B iife -o build/agent.js
+          node --input-type=commonjs -e "const fs=require('fs'),frida=require('frida');(async()=>{const s=await frida.attach(0);const b=await s.compileScript(fs.readFileSync('build/agent.js','utf8'));fs.writeFileSync('../script_69_252.js',b);console.log('bytecode:',b.length,'bytes');})().catch(e=>{console.error(e);process.exit(1)})"
 
       - uses: actions/upload-artifact@v4
         with:
