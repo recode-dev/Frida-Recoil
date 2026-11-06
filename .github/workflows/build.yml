@@ -45,7 +45,7 @@ jobs:
       - name: Build bytecode
         if: steps.cache-script.outputs.cache-hit != 'true'
         run: |
-          cat > Recoil-Plus/agent/package.json <<'EOF'
+          cat > Recoil-Plus/src/package.json <<'EOF'
           {
             "type": "module",
             "browserify": {
